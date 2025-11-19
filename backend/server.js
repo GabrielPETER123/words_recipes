@@ -1,21 +1,22 @@
 const express = require('express');
-const path = require('path');
 const app = express();
-const port = process.env.PORT || 3000;
+const path = require('path');
+const PORT = 8080;
 
-// Serve static frontend files from ../frontend
-app.use(express.static(path.join(__dirname, '..', 'frontend')));
+app.use(express.json())
 
-// Serve index.html for root
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'frontend', 'index.html'));
+
+app.listen(PORT, () => {
+    console.log(`Server is listening http://localhost:${PORT}`);
 });
 
-// 404 for other requests
-app.use((req, res) => {
-    res.status(404).send('Not Found');
+app.get('/test', (req, res) => {
+    res.status(200).send({
+        "test": "test"
+    })
 });
 
-app.listen(port, () => {
-    console.log(`Server (backend + static frontend) is listening on port ${port}`);
+app.post('/test/:id', (req, res) => {
+    const { id } = req.params;
+    const { other } = req.body;
 });
