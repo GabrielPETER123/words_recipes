@@ -8,7 +8,30 @@
     </head>
     
     <body>
-        <h1>TEST</h1>
-        <h2>MAJ</h2>
+            <main>
+                <h1>Recette Du Monde</h1>
+
+                <section>
+                    <h2>Ajouter une recette</h2>
+                    <form id="recipe-form">
+                        <input type="text" name="name" placeholder="Nom" required />
+                        <input type="text" name="author" placeholder="Auteur" required />
+                        <input type="text" name="image_url" placeholder="URL de l'image (optionnel)" />
+                        <textarea name="description" placeholder="Description" required></textarea>
+                        <button type="submit">Enregistrer</button>
+                    </form>
+                </section>
+
+                <section>
+                    <h2>Recettes</h2>
+                    <div>
+                        <input type="text" id="search" placeholder="Rechercher par nom ou auteur" />
+                        <button id="search-btn" type="button">Rechercher</button>
+                        <button id="reset-btn" type="button">Réinitialiser</button>
+                    </div>
+                    <ul id="recipes-list"></ul>
+                    <p id="status"></p>
+                </section>
+            </main>
     </body>
 </html>

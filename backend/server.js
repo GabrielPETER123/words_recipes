@@ -1,22 +1,22 @@
 const express = require('express');
 const app = express();
 const path = require('path');
-const PORT = 8080;
+const recipesRouter = require('./routes/recipes');
+const PORT = process.env.PORT || 8080;
 
-app.use(express.json())
+app.use(express.json());
 
+// API routes
+app.use('/api/recipes', recipesRouter);
+
+// Serve frontend assets
+app.use(express.static(path.join(__dirname, '../frontend')));
+
+// Fallback to index.html for root
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/index.html'));
+});
 
 app.listen(PORT, () => {
     console.log(`Server is listening http://localhost:${PORT}`);
-});
-
-app.get('/test', (req, res) => {
-    res.status(200).send({
-        "test": "test"
-    })
-});
-
-app.post('/test/:id', (req, res) => {
-    const { id } = req.params;
-    const { other } = req.body;
 });
