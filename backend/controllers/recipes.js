@@ -2,6 +2,7 @@ const {
 	createRecipesTable,
 	insertRecipe,
 	queryAllRecipes,
+	queryRecipeById,
 	queryRecipesByFilter,
 	updateRecipe,
 	deleteRecipe
@@ -23,6 +24,20 @@ async function listRecipes(req, res) {
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ error: 'Failed to fetch recipes' });
+	}
+}
+
+async function getRecipe(req, res) {
+	const { id } = req.params;
+	if (!id) return res.status(400).json({ error: 'id param is required' });
+
+	try {
+		const row = await queryRecipeById(Number(id));
+		if (!row) return res.status(404).json({ error: 'Recipe not found' });
+		res.status(200).json(row);
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ error: 'Failed to fetch recipe' });
 	}
 }
 
@@ -78,6 +93,7 @@ async function removeRecipe(req, res) {
 
 module.exports = {
 	listRecipes,
+	getRecipe,
 	createRecipe,
 	editRecipe,
 	removeRecipe

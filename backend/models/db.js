@@ -50,6 +50,21 @@ function queryAllRecipes(){
 };
 
 /**
+ * Query one recipe by id
+ * @param {number} id - Recipe Id
+ * @returns {object|null} - Single recipe or null if not found
+ */
+function queryRecipeById(id){
+    let sql = `SELECT * FROM recipes WHERE id = ?`;
+    return new Promise((resolve, reject) => {
+        db.get(sql, [id], (err, row) => {
+            if (err) return reject(err);
+            resolve(row || null);
+        });
+    });
+};
+
+/**
  * Query recipes corresponding to a search 
  * @param {string} search - Filter to find corresponding Recipes
  * @returns {object[]} - A list of Recipes
@@ -101,6 +116,7 @@ module.exports = {
     createRecipesTable,
     insertRecipe,
     queryAllRecipes,
+    queryRecipeById,
     queryRecipesByFilter,
     updateRecipe,
     deleteRecipe
