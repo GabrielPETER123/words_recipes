@@ -5,7 +5,7 @@ const {
 	queryRecipesByFilter,
 	updateRecipe,
 	deleteRecipe
-} = require('../db/db');
+} = require('../models/db');
 
 // Ensure the table exists when the controller is first loaded
 createRecipesTable();
