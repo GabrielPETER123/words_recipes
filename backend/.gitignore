@@ -1,4 +1,4 @@
 /node_modules
 /.idea
+/word_recipes.db
 package-lock.json
-word_recipes.db
