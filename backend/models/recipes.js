@@ -3,7 +3,7 @@ const sqlite3 = require('sqlite3').verbose();
 //Connect to the DB
 const db = new sqlite3.Database("./words_recipes.db", sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
     if (err) return console.error(err.message);
-    return console.log("CONNECT TO DB");
+    return console.log("RECIPES CONNECT TO DB");
 });
 
 //!Create table
@@ -12,7 +12,7 @@ function createRecipesTable(){
         id INTEGER PRIMARY KEY NOT NULL,
         name TEXT,
         description TEXT,
-        image_url TEXT,
+        image_path TEXT,
         author TEXT
     )`;
     db.run(sql, (err) => {
@@ -26,9 +26,9 @@ function createRecipesTable(){
  * @exemple insertRecipe({"name": "Ratatouille", "description": "there is vegetables", "author": "michel michel"})
  */
 function insertRecipe(recipe){
-    let sql = `INSERT INTO recipes(name, description, image_url, author) VALUES (?,?,?,?)`;
+    let sql = `INSERT INTO recipes(name, description, image_path, author) VALUES (?,?,?,?)`;
     return new Promise((resolve, reject) => {
-        db.run(sql, [recipe.name, recipe.description, recipe.image_url, recipe.author], function(err) {
+        db.run(sql, [recipe.name, recipe.description, recipe.image_path, recipe.author], function(err) {
             if (err) return reject(err);
             resolve({ id: this.lastID });
         });
@@ -84,12 +84,12 @@ function queryRecipesByFilter(search){
  * Update one recipe in the DB
  * @param {int} id - Recipe Id
  * @param {object[]} updatedRecipe - Recipe struct(name, desc, img_url, author)
- * @example updateRecipe(1, {"name": "tarte au pommes", "description": "il y a des pommes", "image_url": "../img/1.png", "author": "martine longeant"})
+ * @example updateRecipe(1, {"name": "tarte au pommes", "description": "il y a des pommes", "image_path": "../img/1.png", "author": "martine longeant"})
  */
 function updateRecipe(id, updatedRecipe){
-    let sql = `UPDATE recipes SET name = ?, description = ?, image_url = ?, author = ? WHERE id = ?`;
+    let sql = `UPDATE recipes SET name = ?, description = ?, image_path = ?, author = ? WHERE id = ?`;
     return new Promise((resolve, reject) => {
-        db.run(sql, [updatedRecipe.name, updatedRecipe.description, updatedRecipe.image_url, updatedRecipe.author, id], function(err) {
+        db.run(sql, [updatedRecipe.name, updatedRecipe.description, updatedRecipe.image_path, updatedRecipe.author, id], function(err) {
             if (err) return reject(err);
             resolve({ changes: this.changes });
         });

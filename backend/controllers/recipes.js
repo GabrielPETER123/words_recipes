@@ -6,7 +6,7 @@ const {
 	queryRecipesByFilter,
 	updateRecipe,
 	deleteRecipe
-} = require('../models/db');
+} = require('../models/recipes');
 
 // Ensure the table exists when the controller is first loaded
 createRecipesTable();
@@ -24,8 +24,8 @@ async function listRecipes(req, res) {
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ error: 'Failed to fetch recipes' });
-	}
-}
+	};
+};
 
 async function getRecipe(req, res) {
 	const { id } = req.params;
@@ -38,44 +38,46 @@ async function getRecipe(req, res) {
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ error: 'Failed to fetch recipe' });
-	}
-}
+	};
+};
 
 async function createRecipe(req, res) {
-	const { name, description, image_url = null, author } = req.body || {};
+	const { name, description, author } = req.body || {};
 	if (!requireFields({ name, description, author })) {
 		return res.status(400).json({ error: 'name, description, and author are required' });
-	}
+	};
 
 	try {
-		const result = await insertRecipe({ name, description, image_url, author });
+		// Get image path if a file was uploaded
+		const image_path = req.file ? `/img/recipes/${req.file.filename}` : null;
+		const result = await insertRecipe({ name, description, image_path, author });
 		res.status(201).json({ id: result.id, message: 'Recipe created' });
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ error: 'Failed to create recipe' });
-	}
-}
+	};
+};
 
 async function editRecipe(req, res) {
 	const { id } = req.params;
-	const { name, description, image_url = null, author } = req.body || {};
+	const { name, description, image_path = null, author } = req.body || {};
 
 	if (!id) {
 		return res.status(400).json({ error: 'id param is required' });
-	}
+	};
 	if (!requireFields({ name, description, author })) {
 		return res.status(400).json({ error: 'name, description, and author are required' });
-	}
+	};
 
 	try {
-		const result = await updateRecipe(Number(id), { name, description, image_url, author });
+		const result = await updateRecipe(Number(id), { name, description, image_path, author });
 		if (!result.changes) return res.status(404).json({ error: 'Recipe not found' });
 		res.status(200).json({ message: 'Recipe updated' });
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ error: 'Failed to update recipe' });
-	}
-}
+	};
+};
 
 async function removeRecipe(req, res) {
 	const { id } = req.params;
@@ -88,8 +90,8 @@ async function removeRecipe(req, res) {
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ error: 'Failed to delete recipe' });
-	}
-}
+	};
+};
 
 module.exports = {
 	listRecipes,
