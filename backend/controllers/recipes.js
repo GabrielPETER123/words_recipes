@@ -12,8 +12,8 @@ const {
 createRecipesTable();
 
 const requireFields = (recipe) => {
-	const { name, description, author } = recipe || {};
-	return Boolean(name && description && author);
+	const { name, description } = recipe || {};
+	return Boolean(name && description);
 };
 
 async function listRecipes(req, res) {
@@ -42,15 +42,15 @@ async function getRecipe(req, res) {
 };
 
 async function createRecipe(req, res) {
-	const { name, description, author } = req.body || {};
-	if (!requireFields({ name, description, author })) {
-		return res.status(400).json({ error: 'name, description, and author are required' });
+	const { name, description} = req.body || {};
+	if (!requireFields({ name, description })) {
+		return res.status(400).json({ error: 'recipe name and description are required' });
 	};
 
 	try {
 		// Get image path if a file was uploaded
 		const image_path = req.file ? `/img/recipes/${req.file.filename}` : null;
-		const result = await insertRecipe({ name, description, image_path, author });
+		const result = await insertRecipe({ name, description, image_path, author : 'Anonyme' });
 		res.status(201).json({ id: result.id, message: 'Recipe created' });
 	} catch (err) {
 		console.error(err);
@@ -65,8 +65,8 @@ async function editRecipe(req, res) {
 	if (!id) {
 		return res.status(400).json({ error: 'id param is required' });
 	};
-	if (!requireFields({ name, description, author })) {
-		return res.status(400).json({ error: 'name, description, and author are required' });
+	if (!requireFields({ name, description })) {
+		return res.status(400).json({ error: 'name and description are required' });
 	};
 
 	try {
