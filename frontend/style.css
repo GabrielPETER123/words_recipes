@@ -1,0 +1,31 @@
+body{
+    background-color:#333333;
+}
+
+header{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+main{
+    max-width: 80%;
+    margin: auto;
+}
+
+main>section{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 3%;
+}
+main>section>form{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+main>section>form>label{
+    background-color: #FFFFFF;
+    text-align: center;
+}
