@@ -5,8 +5,11 @@ const {
 	queryUserById,
 	queryUsersByFilter,
 	updateUser,
-	deleteUser
+	deleteUser,
+	queryUserByEmail
 } = require('../models/users');
+
+const bcrypt = require('bcrypt');
 
 // Ensure the table exists when the controller is first loaded
 createUsersTable();
@@ -94,12 +97,75 @@ async function removeUser(req, res) {
 	};
 };
 
+
+
+async function register(req, res) {
+    const { first_name, last_name, email, password, location } = req.body;
+    if (!first_name || !last_name || !email || !password || !location) {
+        return res.status(400).json({ error: 'Champs manquants' });
+    }
+    try {
+        const existing = await queryUserByEmail(email);
+        if (existing) {
+            return res.status(409).json({ error: 'Email déjà utilisé' });
+        }
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const image_path = req.file ? `/img/users/${req.file.filename}` : null;
+        const result = await insertUser({
+            first_name,
+            last_name,
+            email,
+            password: hashedPassword,
+            location,
+            image_path
+        });
+        res.status(201).json({
+            message: 'Utilisateur créé',
+            userId: result.id
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+}
+
+async function login(req, res) {
+    const { email, password } = req.body;
+    if (!email || !password) {
+        return res.status(400).json({ error: 'Email et mot de passe requis' });
+    }
+    try {
+        const user = await queryUserByEmail(email);
+        if (!user) {
+            return res.status(401).json({ error: 'Identifiants invalides' });
+        }
+        const valid = await bcrypt.compare(password, user.password);
+        if (!valid) {
+            return res.status(401).json({ error: 'Identifiants invalides' });
+        }
+        res.status(200).json({
+            message: 'Connexion réussie',
+            user: {
+                id: user.id,
+                first_name: user.first_name,
+                email: user.email
+            }
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+}
+
+
 module.exports = {
 	listUsers,
 	getUser,
 	createUser,
 	editUsers,
-	removeUser
+	removeUser,
+	register,
+	login
 };
 
 
