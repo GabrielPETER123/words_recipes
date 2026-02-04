@@ -10,6 +10,31 @@ const setStatus = (message = '') => {
     statusEl.textContent = message;
 };
 
+async function getRecipeFilePath(recipeId) {
+  try {
+    const response = await fetch(`${RECIPE_API_URL}/${recipeId}`);
+    const recipe = await response.json();
+    return recipe.image_path;
+  } catch (error) {
+    console.error('Error fetching recipe:', error);
+    return null;
+  }
+};
+
+async function deleteRecipe(recipeId) {
+    try {
+        const response = await fetch(`${RECIPE_API_URL}/${recipeId}`, {
+            method: 'DELETE'
+        });
+        if (response.ok) {
+            loadRecipes();
+        };
+    } catch {
+        setStatus('Erreur lors de la suppression');
+    };
+};
+
+
 const renderRecipes = (recipes) => {
     listEl.innerHTML = '';
 
@@ -35,7 +60,6 @@ const renderRecipes = (recipes) => {
                 <button type="button" class="cancel-btn">Annuler</button>
             </form>
         `;
-
         listEl.appendChild(li);
     });
 };

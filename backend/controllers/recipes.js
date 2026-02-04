@@ -1,3 +1,6 @@
+const fs = require('fs').promises;
+const path = require('path');
+
 const {
 	createRecipesTable,
 	insertRecipe,
@@ -10,6 +13,7 @@ const {
 
 // Ensure the table exists when the controller is first loaded
 createRecipesTable();
+
 
 const requireFields = (recipe) => {
 	const { name, description } = recipe || {};
@@ -91,8 +95,24 @@ async function removeRecipe(req, res) {
     }
 
 	try {
+		// Fetch the recipe to get image_path
+		const recipe = await queryRecipeById(Number(id));
+		if (!recipe) return res.status(404).json({ error: 'Recipe not found' });
+
+		// Delete the image file if it exists
+		if (recipe.image_path) {
+			try {
+				const filename = path.basename(recipe.image_path);
+				const imagePath = path.join(__dirname, '..', 'img', 'recipes', filename);
+				await fs.unlink(imagePath);
+				console.log('Image file deleted:', imagePath);
+			} catch (fileErr) {
+				console.warn('Warning: Could not delete image file:', fileErr.message);
+			}
+		}
+
+		// Delete the recipe from database
 		const result = await deleteRecipe(Number(id));
-		if (!result.changes) return res.status(404).json({ error: 'Recipe not found' });
 		res.status(200).json({ message: 'Recipe deleted' });
 	} catch (err) {
 		console.error(err);

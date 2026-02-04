@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
             const isUser = req.originalUrl && req.originalUrl.startsWith('/api/users');
             const isRecipe = req.originalUrl && req.originalUrl.startsWith('/api/recipes');
             const sub = isUser ? 'users' : (isRecipe ? 'recipes' : '');
-            const baseDir = path.join(__dirname, '../frontend/img');
+            const baseDir = path.join(__dirname, '../backend/img');
             const dest = sub ? path.join(baseDir, sub) : baseDir;
             fs.mkdirSync(dest, { recursive: true });
             cb(null, dest);
@@ -41,6 +41,9 @@ app.use((req, res, next) => {
 // API routes
 app.use('/api/recipes', recipesRouter);
 app.use('/api/users', usersRouter)
+
+// Serve uploaded images
+app.use('/img', express.static(path.join(__dirname, 'img')));
 
 // Serve frontend assets
 app.use(express.static(path.join(__dirname, '../frontend')));
