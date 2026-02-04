@@ -43,6 +43,7 @@ async function getRecipe(req, res) {
 
 async function createRecipe(req, res) {
 	const { name, description} = req.body || {};
+	const user = req.user;
 	if (!requireFields({ name, description })) {
 		return res.status(400).json({ error: 'recipe name and description are required' });
 	};
@@ -50,7 +51,7 @@ async function createRecipe(req, res) {
 	try {
 		// Get image path if a file was uploaded
 		const image_path = req.file ? `/img/recipes/${req.file.filename}` : null;
-		const result = await insertRecipe({ name, description, image_path, author : 'Anonyme' });
+		const result = await insertRecipe({ name, description, image_path, author : user.name, user_id: user.id });
 		res.status(201).json({ id: result.id, message: 'Recipe created' });
 	} catch (err) {
 		console.error(err);
@@ -61,17 +62,18 @@ async function createRecipe(req, res) {
 async function editRecipe(req, res) {
 	const { id } = req.params;
 	const { name, description } = req.body || {};
+	const userId = req.user.id;
 
-	if (!id) {
-		return res.status(400).json({ error: 'id param is required' });
-	};
+    if (!(await isOwner(id, userId))) {
+        return res.status(403).json({ error: 'Accès refusé' });
+    }
 	if (!requireFields({ name, description })) {
 		return res.status(400).json({ error: 'name and description are required' });
 	};
 
 	try {
 		const image_path = req.file? `/img/recipes/${req.file.filename}` : null;
-		const result = await updateRecipe(Number(id), { name, description, image_path, author : 'Anonyme'});
+		const result = await updateRecipe(Number(id), { name, description, image_path, author: req.user.name});
 		if (!result.changes) return res.status(404).json({ error: 'Recipe not found' });
 		res.status(200).json({ message: 'Recipe updated' });
 	} catch (err) {
@@ -82,7 +84,11 @@ async function editRecipe(req, res) {
 
 async function removeRecipe(req, res) {
 	const { id } = req.params;
-	if (!id) return res.status(400).json({ error: 'id param is required' });
+	const userId = req.user.id;
+
+	if (!(await isOwner(id, userId))) {
+        return res.status(403).json({ error: 'Accès refusé' });
+    }
 
 	try {
 		const result = await deleteRecipe(Number(id));
@@ -93,6 +99,12 @@ async function removeRecipe(req, res) {
 		res.status(500).json({ error: 'Failed to delete recipe' });
 	};
 };
+
+async function isOwner(recipeId, userId) {
+    const recipe = await queryRecipeById(recipeId);
+    return recipe && recipe.user_id === userId;
+}
+
 
 module.exports = {
 	listRecipes,

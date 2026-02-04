@@ -4,6 +4,8 @@ const listEl = document.getElementById('recipes-list');
 const statusEl = document.getElementById('status');
 const searchInput = document.getElementById('search');
 
+const user = JSON.parse(localStorage.getItem('user'));
+
 const setStatus = (message = '') => {
     statusEl.textContent = message;
 };
@@ -20,10 +22,10 @@ const renderRecipes = (recipes) => {
             <small>Auteur : ${recipe.author}</small>
             ${recipe.image_path ? `<img src="${recipe.image_path}" width="150">` : ''}
 
-            <div>
+            ${user && user.id === recipe.user_id ? `
                 <button class="edit-btn" data-id="${recipe.id}">Modifier</button>
                 <button class="delete-btn" data-id="${recipe.id}">Supprimer</button>
-            </div>
+            ` : ''}
 
             <form class="edit-form" data-id="${recipe.id}" style="display:none">
                 <input type="text" name="name" value="${recipe.name}" required>
@@ -70,7 +72,9 @@ listEl.addEventListener('click', async (e) => {
         if (!confirm('Supprimer cette recette ?')) return;
 
         const res = await fetch(`/api/recipes/${id}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`}
         });
 
         if (res.ok) {
@@ -107,6 +111,8 @@ listEl.addEventListener('submit', async (e) => {
 
     const res = await fetch(`/api/recipes/${id}`, {
         method: 'PUT',
+            headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`},
         body: formData
     });
 

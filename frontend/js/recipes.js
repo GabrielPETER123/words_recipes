@@ -9,6 +9,8 @@ form.addEventListener('submit', async (e) => {
     try {
         res = await fetch('/api/recipes', {
             method: 'POST',
+            headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`},
             body: formData
         });
     } catch (err) {

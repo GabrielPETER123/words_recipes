@@ -11,12 +11,18 @@
 <header>
     <h1>Recette du Monde</h1>
     <nav>
+        <span id="user-label"></span>
         <a href="index.html">Accueil</a>
-        <a href="recipes.html">Recettes</a>
-        <a href="login.html">Connexion</a>
-        <a href="register.html">Inscription</a>
+        <a href="recipes.html">Ajouter une recette</a>
+        <a href="profile.html" id="profile-link">Mon profil</a>
+        <a href="login.html" id="login-link">Connexion</a>
+        <a href="register.html" id="register-link">Inscription</a>
+        <button id="logout-btn" onclick="logout()">Déconnexion</button>
     </nav>
 </header>
+
+<script src="js/auth.js"></script>
+
 
 <main>
     <h2>Créer une recette</h2>

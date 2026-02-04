@@ -13,7 +13,8 @@ function createRecipesTable(){
         name TEXT,
         description TEXT,
         image_path TEXT,
-        author TEXT
+        author TEXT,
+        user_id INTEGER
     )`;
     db.run(sql, (err) => {
         if (err) return console.error(err.message);
@@ -28,7 +29,7 @@ function createRecipesTable(){
 function insertRecipe(recipe){
     let sql = `INSERT INTO recipes(name, description, image_path, author) VALUES (?,?,?,?)`;
     return new Promise((resolve, reject) => {
-        db.run(sql, [recipe.name, recipe.description, recipe.image_path, recipe.author], function(err) {
+        db.run(sql, [recipe.name, recipe.description, recipe.image_path, recipe.author, recipe.user_id], function(err) {
             if (err) return reject(err);
             resolve({ id: this.lastID });
         });

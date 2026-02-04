@@ -10,13 +10,16 @@ const {
 } = require('../models/users');
 
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const SECRET = 'super_secret_key';
+
 
 // Ensure the table exists when the controller is first loaded
 createUsersTable();
 
 const requireFields = (user) => {
-	const { first_name, last_name, email, location } = user || {};
-	return Boolean(first_name && last_name && email && location);
+	const {name, email } = user || {};
+	return Boolean(name && email );
 };
 
 async function listUsers(req, res) {
@@ -45,16 +48,16 @@ async function getUser(req, res) {
 };
 
 async function createUser(req, res) {
-	const { first_name, last_name, email, location } = req.body || {};
+	const { name, email } = req.body || {};
 	
-	if (!requireFields({ first_name, last_name, email, location })) {
-		return res.status(400).json({ error: 'first_name, last_name, email and location are required' });
+	if (!requireFields({ name, email })) {
+		return res.status(400).json({ error: 'name and email are required' });
 	}
 
 	try {
 		// Get image path if a file was uploaded
 		const image_path = req.file ? `/img/users/${req.file.filename}` : null;
-		const result = await insertUser({ first_name, last_name, email, location, image_path });
+		const result = await insertUser({ name, email, image_path });
 		res.status(201).json({ id: result.id, message: 'User created' });
 	} catch (err) {
 		console.error(err);
@@ -64,17 +67,17 @@ async function createUser(req, res) {
 
 async function editUsers(req, res) {
 	const { id } = req.params;
-	const { first_name, last_name, email, location, image_path = null } = req.body || {};
+	const { name, email, image_path = null } = req.body || {};
 
 	if (!id) {
 		return res.status(400).json({ error: 'id param is required' });
 	};
-	if (!requireFields({ first_name, last_name, email, location })) {
-		return res.status(400).json({ error: 'first_name, last_name, email and location are required' });
+	if (!requireFields({ name, email })) {
+		return res.status(400).json({ error: 'name and email are required' });
 	};
 
 	try {
-		const result = await updateUser(Number(id), { first_name, last_name, email, location, image_path });
+		const result = await updateUser(Number(id), { name, email, image_path });
 		if (!result.changes) return res.status(404).json({ error: 'Users not found' });
 		res.status(200).json({ message: 'User updated' });
 	} catch (err) {
@@ -100,8 +103,8 @@ async function removeUser(req, res) {
 
 
 async function register(req, res) {
-    const { first_name, last_name, email, password, location } = req.body;
-    if (!first_name || !last_name || !email || !password || !location) {
+    const { name, email, password } = req.body;
+    if (!name || !email || !password) {
         return res.status(400).json({ error: 'Champs manquants' });
     }
     try {
@@ -112,11 +115,9 @@ async function register(req, res) {
         const hashedPassword = await bcrypt.hash(password, 10);
         const image_path = req.file ? `/img/users/${req.file.filename}` : null;
         const result = await insertUser({
-            first_name,
-            last_name,
+			name,
             email,
             password: hashedPassword,
-            location,
             image_path
         });
         res.status(201).json({
@@ -136,26 +137,42 @@ async function login(req, res) {
     }
     try {
         const user = await queryUserByEmail(email);
+
         if (!user) {
             return res.status(401).json({ error: 'Identifiants invalides' });
         }
+
         const valid = await bcrypt.compare(password, user.password);
         if (!valid) {
             return res.status(401).json({ error: 'Identifiants invalides' });
         }
+
+        const token = jwt.sign(
+            {
+                id: user.id,
+                email: user.email,
+                name: user.name  
+            },
+            SECRET,
+            { expiresIn: '1h' }
+        );
+
         res.status(200).json({
             message: 'Connexion réussie',
+            token,
             user: {
                 id: user.id,
-                first_name: user.first_name,
-                email: user.email
+                email: user.email,
+                name: user.name
             }
         });
+
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Erreur serveur' });
     }
 }
+
 
 
 module.exports = {

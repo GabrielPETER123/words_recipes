@@ -1,5 +1,5 @@
 const form = document.getElementById('login-form');
-const status = document.getElementById('status');
+const statusEl = document.getElementById('status');
 
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -15,11 +15,13 @@ form.addEventListener('submit', async (e) => {
     const json = await res.json();
 
     if (!res.ok) {
-        status.textContent = json.error;
+        statusEl.textContent = json.error;
         return;
     }
 
-    localStorage.setItem('user', JSON.stringify(json.user));
-    window.location.href = 'profile.html';
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    window.location.href = 'index.html';
+
 });
 

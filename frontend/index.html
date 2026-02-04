@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Recette du Monde</title>
     <script src="js/index.js" defer></script>
+    <script src="js/auth.js"></script>
     <link rel="stylesheet" href="static/style.css" />
 </head>
 <body>
@@ -11,12 +12,17 @@
 <header>
     <h1>Recette du Monde</h1>
     <nav>
-        <a href="profile.html">Mon profil</a>
-        <a href="login.html">Connexion</a>
-        <a href="register.html">Inscription</a>
-        <a href="recipes.html">Ajouter une Recettes</a>
+        <span id="user-label"></span>
+        <a href="index.html">Accueil</a>
+        <a href="recipes.html">Ajouter une recette</a>
+        <a href="profile.html" id="profile-link">Mon profil</a>
+        <a href="login.html" id="login-link">Connexion</a>
+        <a href="register.html" id="register-link">Inscription</a>
+        <button id="logout-btn" onclick="logout()">Déconnexion</button>
     </nav>
 </header>
+
+
 
 <main>
     <section>

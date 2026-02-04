@@ -11,11 +11,9 @@ const db = new sqlite3.Database("./words_recipes.db", sqlite3.OPEN_READWRITE | s
 function createUsersTable(){
     let sql = `CREATE TABLE IF NOT EXISTS users(
         id INTEGER PRIMARY KEY NOT NULL,
-        first_name TEXT,
-        last_name TEXT,
+        name TEXT UNIQUE,
         email TEXT UNIQUE,
         password TEXT,
-        location TEXT,
         image_path TEXT
     )`;
     db.run(sql, (err) => {
@@ -25,9 +23,9 @@ function createUsersTable(){
 
 
 function insertUser(user){
-    let sql = `INSERT INTO users(first_name, last_name, email, password, location, image_path) VALUES (?,?,?,?,?,?)`;
+    let sql = `INSERT INTO users(name, email, password, image_path) VALUES (?,?,?,?)`;
     return new Promise((resolve, reject) => {
-        db.run(sql, [user.first_name, user.last_name, user.email, user.password, user.location, user.image_path], function(err) {
+        db.run(sql, [user.name, user.email, user.password, user.image_path], function(err) {
             if (err) return reject(err);
             resolve({ id: this.lastID });
         });
@@ -55,7 +53,7 @@ function queryUserById(id){
 };
 
 function queryUsersByFilter(search){
-    let sql = `SELECT * FROM users WHERE first_name = ? OR last_name = ? OR location = ?`;
+    let sql = `SELECT * FROM users WHERE name = ? `;
     return new Promise((resolve, reject) => {
         db.all(sql, [search, search, search], (err, rows) => {
             if (err) return reject(err);
@@ -76,9 +74,9 @@ function queryUserByEmail(email){
 
 
 function updateUser(id, updatedUser){
-    let sql = `UPDATE users SET first_name = ?, last_name = ?, email = ?, location = ?, image_path = ? WHERE id = ?`;
+    let sql = `UPDATE users SET name = ?, email = ?, image_path = ? WHERE id = ?`;
     return new Promise((resolve, reject) => {
-        db.run(sql, [updatedUser.first_name, updatedUser.last_name, updatedUser.email, updatedUser.location, updatedUser.image_path, id], function(err) {
+        db.run(sql, [updatedUser.name, updatedUser.email, updatedUser.image_path, id], function(err) {
             if (err) return reject(err);
             resolve({ changes: this.changes });
         });
