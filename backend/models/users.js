@@ -1,7 +1,8 @@
 const sqlite3 = require('sqlite3').verbose();
+const bcrypt = require('bcrypt');
 
 //Connect to the DB
-const db = new sqlite3.Database("./words_recipes.db", sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
+const db = new sqlite3.Database("./backend/words_recipes.db", sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
     if (err) return console.error(err.message);
     return console.log("USERS CONNECT TO DB");
 });
@@ -12,7 +13,8 @@ function createUsersTable(){
         id INTEGER PRIMARY KEY NOT NULL,
         first_name TEXT,
         last_name TEXT,
-        email TEXT,
+        email TEXT UNIQUE,
+        password TEXT,
         location TEXT,
         image_path TEXT
     )`;
@@ -23,9 +25,9 @@ function createUsersTable(){
 
 
 function insertUser(user){
-    let sql = `INSERT INTO users(first_name, last_name, email, location, image_path) VALUES (?,?,?,?,?)`;
+    let sql = `INSERT INTO users(first_name, last_name, email, password, location, image_path) VALUES (?,?,?,?,?,?)`;
     return new Promise((resolve, reject) => {
-        db.run(sql, [user.first_name, user.last_name, user.email, user.location, user.image_path], function(err) {
+        db.run(sql, [user.first_name, user.last_name, user.email, user.password, user.location, user.image_path], function(err) {
             if (err) return reject(err);
             resolve({ id: this.lastID });
         });
@@ -62,6 +64,17 @@ function queryUsersByFilter(search){
     });
 };
 
+function queryUserByEmail(email){
+    let sql = `SELECT * FROM users WHERE email = ?`;
+    return new Promise((resolve, reject) => {
+        db.get(sql, [email], (err, row) => {
+            if (err) return reject(err);
+            resolve(row || null);
+        });
+    });
+};
+
+
 function updateUser(id, updatedUser){
     let sql = `UPDATE users SET first_name = ?, last_name = ?, email = ?, location = ?, image_path = ? WHERE id = ?`;
     return new Promise((resolve, reject) => {
@@ -82,6 +95,7 @@ function deleteUser(id){
     });
 };
 
+
 module.exports = {
     db,
     createUsersTable,
@@ -89,6 +103,7 @@ module.exports = {
     queryAllUsers,
     queryUserById,
     queryUsersByFilter,
+    queryUserByEmail,
     updateUser,
-    deleteUser
+    deleteUser,
 };

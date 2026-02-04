@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Créer une recette</title>
+    <link rel="stylesheet" href="static/style.css">
+    <script src="js/recipes.js" defer></script>
+</head>
+<body>
+
+<header>
+    <h1>Recette du Monde</h1>
+    <nav>
+        <a href="index.html">Accueil</a>
+        <a href="recipes.html">Recettes</a>
+        <a href="login.html">Connexion</a>
+        <a href="register.html">Inscription</a>
+    </nav>
+</header>
+
+<main>
+    <h2>Créer une recette</h2>
+
+    <form id="recipe-form">
+        <input type="text" name="name" placeholder="Nom de la recette" required />
+
+        <textarea name="description" placeholder="Description de la recette" required></textarea>
+
+        <label>Image (optionnelle)</label>
+        <input type="file" name="image"  accept="image/png, image/jpeg"/>
+
+        <button type="submit">Créer la recette</button>
+    </form>
+
+    <p id="status"></p>
+</main>
+
+</body>
+</html>

@@ -1,3 +1,6 @@
+const fs = require('fs').promises;
+const path = require('path');
+
 const {
 	createRecipesTable,
 	insertRecipe,
@@ -11,9 +14,10 @@ const {
 // Ensure the table exists when the controller is first loaded
 createRecipesTable();
 
+
 const requireFields = (recipe) => {
-	const { name, description, author } = recipe || {};
-	return Boolean(name && description && author);
+	const { name, description } = recipe || {};
+	return Boolean(name && description);
 };
 
 async function listRecipes(req, res) {
@@ -42,15 +46,15 @@ async function getRecipe(req, res) {
 };
 
 async function createRecipe(req, res) {
-	const { name, description, author } = req.body || {};
-	if (!requireFields({ name, description, author })) {
-		return res.status(400).json({ error: 'name, description, and author are required' });
+	const { name, description} = req.body || {};
+	if (!requireFields({ name, description })) {
+		return res.status(400).json({ error: 'recipe name and description are required' });
 	};
 
 	try {
 		// Get image path if a file was uploaded
 		const image_path = req.file ? `/img/recipes/${req.file.filename}` : null;
-		const result = await insertRecipe({ name, description, image_path, author });
+		const result = await insertRecipe({ name, description, image_path, author : 'Anonyme' });
 		res.status(201).json({ id: result.id, message: 'Recipe created' });
 	} catch (err) {
 		console.error(err);
@@ -60,17 +64,18 @@ async function createRecipe(req, res) {
 
 async function editRecipe(req, res) {
 	const { id } = req.params;
-	const { name, description, image_path = null, author } = req.body || {};
+	const { name, description } = req.body || {};
 
 	if (!id) {
 		return res.status(400).json({ error: 'id param is required' });
 	};
-	if (!requireFields({ name, description, author })) {
-		return res.status(400).json({ error: 'name, description, and author are required' });
+	if (!requireFields({ name, description })) {
+		return res.status(400).json({ error: 'name and description are required' });
 	};
 
 	try {
-		const result = await updateRecipe(Number(id), { name, description, image_path, author });
+		const image_path = req.file? `/img/recipes/${req.file.filename}` : null;
+		const result = await updateRecipe(Number(id), { name, description, image_path, author : 'Anonyme'});
 		if (!result.changes) return res.status(404).json({ error: 'Recipe not found' });
 		res.status(200).json({ message: 'Recipe updated' });
 	} catch (err) {
@@ -84,8 +89,24 @@ async function removeRecipe(req, res) {
 	if (!id) return res.status(400).json({ error: 'id param is required' });
 
 	try {
+		// Fetch the recipe to get image_path
+		const recipe = await queryRecipeById(Number(id));
+		if (!recipe) return res.status(404).json({ error: 'Recipe not found' });
+
+		// Delete the image file if it exists
+		if (recipe.image_path) {
+			try {
+				const filename = path.basename(recipe.image_path);
+				const imagePath = path.join(__dirname, '..', 'img', 'recipes', filename);
+				await fs.unlink(imagePath);
+				console.log('Image file deleted:', imagePath);
+			} catch (fileErr) {
+				console.warn('Warning: Could not delete image file:', fileErr.message);
+			}
+		}
+
+		// Delete the recipe from database
 		const result = await deleteRecipe(Number(id));
-		if (!result.changes) return res.status(404).json({ error: 'Recipe not found' });
 		res.status(200).json({ message: 'Recipe deleted' });
 	} catch (err) {
 		console.error(err);

@@ -12,7 +12,15 @@ router.post('/', (req, res, next) => {
         next();
     });
 }, users.createUser);
+
+
+router.post('/register', users.register);
+router.post('/login', users.login);
 router.put('/:id', users.editUsers);
 router.delete('/:id', users.removeUser);
 
 module.exports = router;
+
+
+
+

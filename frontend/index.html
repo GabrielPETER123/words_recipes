@@ -1,67 +1,33 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Recette Du Monde</title>
-    <script src="script.js" defer></script>
-    <link rel="stylesheet" href="style.css" />
-  </head>
+<head>
+    <meta charset="UTF-8">
+    <title>Recette du Monde</title>
+    <script src="js/index.js" defer></script>
+    <link rel="stylesheet" href="static/style.css" />
+</head>
+<body>
 
-  <body>
-    <header>
-        <h1>Recette Du Monde</h1>
-    </header>
-    <main>
-      <section>
-        <h2>Ajouter une recette</h2>
-        <form id="recipe-form">
-          <input type="text" name="name" placeholder="Nom" required />
-          <input type="text" name="author" placeholder="Auteur" required />
-          <textarea
-            name="description"
-            placeholder="Description"
-            required
-          ></textarea>
-          <label for="image">Mettre une image (optionnel)</label>
-          <input type="file" id="image" accept="image/png, image/jpeg" />          
-          <button type="submit">Enregistrer</button>
-        </form>
-      </section>
+<header>
+    <h1>Recette du Monde</h1>
+    <nav>
+        <a href="profile.html">Mon profil</a>
+        <a href="login.html">Connexion</a>
+        <a href="register.html">Inscription</a>
+        <a href="recipes.html">Ajouter une Recettes</a>
+    </nav>
+</header>
 
-      <section>
-        <h2>Ajouter un utilisateur</h2>
-        <form id="user-form">
-          <input type="text" name="first_name" placeholder="Prénom" required />
-          <input type="text" name="last_name" placeholder="Nom" required />
-          <input type="text" name="email" placeholder="Email" required />
-          <input
-            type="text"
-            name="location"
-            placeholder="Localisation"
-            required
-          />
-          <label for="image">Mettre une image (optionnel)</label>
-          <input type="file" name="image" accept="image/png, image/jpeg" />
-          <button type="submit">Enregistrer</button>
-        </form>
-      </section>
+<main>
+    <section>
+        <input type="text" id="search" placeholder="Rechercher une recette">
+        <button id="search-btn">Rechercher</button>
+        <button id="reset-btn">Reset</button>
+    </section>
 
-      <section>
-        <h2>Recettes</h2>
-        <div>
-          <input
-            type="text"
-            id="search"
-            placeholder="Rechercher par nom ou auteur"
-          />
-          <button id="search-btn" type="button">Rechercher</button>
-          <button id="reset-btn" type="button">Recharger</button>
-        </div>
-        <ul id="recipes-list"></ul>
-        <p id="status"></p>
-      </section>
-    </main>
-    <footer></footer>
-  </body>
+    <ul id="recipes-list"></ul>
+    <p id="status"></p>
+</main>
+
+</body>
 </html>
