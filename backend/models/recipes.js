@@ -1,7 +1,9 @@
 const sqlite3 = require('sqlite3').verbose();
+const path = require('path');
 
 //Connect to the DB
-const db = new sqlite3.Database("./backend/words_recipes.db", sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
+const dbPath = path.join(__dirname, '..', 'words_recipes.db');
+const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
     if (err) return console.error(err.message);
     return console.log("RECIPES CONNECT TO DB");
 });
