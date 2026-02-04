@@ -71,9 +71,10 @@ function queryRecipeById(id){
  * @example queryRecipesByFilter("tarte")
  */
 function queryRecipesByFilter(search){
-    let sql = `SELECT * FROM recipes WHERE name = ? OR author = ?`;
+    let sql = `SELECT * FROM recipes WHERE name LIKE ? OR author LIKE ?`;
     return new Promise((resolve, reject) => {
-        db.all(sql, [search, search], (err, rows) => {
+        const pattern = `%${search}%`;
+        db.all(sql, [pattern, pattern], (err, rows) => {
             if (err) return reject(err);
             resolve(rows);
         });
