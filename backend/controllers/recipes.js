@@ -1,4 +1,5 @@
 const fs = require('fs').promises;
+const path = require('path');
 
 const {
 	createRecipesTable,
@@ -95,7 +96,8 @@ async function removeRecipe(req, res) {
 		// Delete the image file if it exists
 		if (recipe.image_path) {
 			try {
-				const imagePath = `../words_recipes/frontend/${recipe.image_path}`;
+				const filename = path.basename(recipe.image_path);
+				const imagePath = path.join(__dirname, '..', 'img', 'recipes', filename);
 				await fs.unlink(imagePath);
 				console.log('Image file deleted:', imagePath);
 			} catch (fileErr) {

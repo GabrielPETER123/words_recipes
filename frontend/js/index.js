@@ -47,7 +47,7 @@ const renderRecipes = (recipes) => {
 
             <div>
                 <button class="edit-btn" data-id="${recipe.id}">Modifier</button>
-                <button class="delete-btn" data-id="${recipe.id} onclick=deleteRecipe(${recipe.id})">Supprimer</button>
+                <button class="delete-btn" data-id="${recipe.id}">Supprimer</button>
             </div>
 
             <form class="edit-form" data-id="${recipe.id}" style="display:none">
