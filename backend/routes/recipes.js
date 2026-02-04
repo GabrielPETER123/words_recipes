@@ -12,6 +12,9 @@ router.post('/', (req, res, next) => {
 		next();
 	});
 }, recipes.createRecipe);
+
+router.put('/:id', (req, res, next) => 
+	req.upload.single('image')(req, res, next), recipes.editRecipe);
 router.put('/:id', recipes.editRecipe);
 router.delete('/:id', recipes.removeRecipe);
 

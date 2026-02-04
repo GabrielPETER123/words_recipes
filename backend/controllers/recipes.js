@@ -63,7 +63,7 @@ async function createRecipe(req, res) {
 
 async function editRecipe(req, res) {
 	const { id } = req.params;
-	const { name, description, image_path = null, author } = req.body || {};
+	const { name, description } = req.body || {};
 
 	if (!id) {
 		return res.status(400).json({ error: 'id param is required' });
@@ -73,7 +73,8 @@ async function editRecipe(req, res) {
 	};
 
 	try {
-		const result = await updateRecipe(Number(id), { name, description, image_path, author });
+		const image_path = req.file? `/img/recipes/${req.file.filename}` : null;
+		const result = await updateRecipe(Number(id), { name, description, image_path, author : 'Anonyme'});
 		if (!result.changes) return res.status(404).json({ error: 'Recipe not found' });
 		res.status(200).json({ message: 'Recipe updated' });
 	} catch (err) {
